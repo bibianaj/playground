@@ -1,9 +1,10 @@
-package com.play.bibi;
+package com.play;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class} )
 public class BibiApplication {
 
 	public static void main(String[] args) {
