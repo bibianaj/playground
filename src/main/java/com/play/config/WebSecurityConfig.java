@@ -8,12 +8,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.play.entity.authentication.AuthenticationRequest;
+import com.play.filters.JwtRequestFilter;
 import com.play.service.user.BibiUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private BibiUserDetailsService bibiUserDetailsService;
+	
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -45,17 +50,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //		http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
 		http.csrf().disable()
 		.authorizeRequests().antMatchers(
-				"/authenticate",
-				"/hello")
-		.permitAll().anyRequest().authenticated();
+				"/authenticate")
+		.permitAll().anyRequest().authenticated()
+		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Bean
 	public AuthenticationManager authenticationMangerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	
-	
+		
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return NoOpPasswordEncoder.getInstance();

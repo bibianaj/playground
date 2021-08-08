@@ -13,6 +13,7 @@ public class BibiUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// TO-DO: Need to connect DB and parsing the real data
 		return new User("foo", "foo", new ArrayList<>());
 	}
 
